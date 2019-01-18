@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WebAuthn API Sample</title>
+  </head>
+  <body>
+    <button id="attestation">生成</button> <button id="assertion">認証</button>
+    <div class="element"></div>
+    <script>
+      // 補助関数
+      function str2buf(str) {
+        return new Uint8Array(str.length).map(function(x, i) {
+          return str.charCodeAt(i);
+        });
+      }
+
+      function buf2str(buf) {
+        let str = '';
+        if (!(buf.constructor === Uint8Array)) {
+          buf = new Uint8Array(buf);
+        }
+        buf.map(function(x) {
+          return (str += String.fromCharCode(x));
+        });
+        return str;
+      }
+
+      // 生成
+      function runAttestation() {
+        // チャレンジ値の生成
+        let challengeBuf = new Uint8Array(16);
+        window.crypto.getRandomValues(challengeBuf);
+
+        // 公開鍵生成リクエストのパラメータ
+        const publicKey = {
+          challenge: challengeBuf,
+          rp: {
+            name: 'Example',
+            id: 'localhost',
+          },
+          user: {
+            id: str2buf('ExampleId'),
+            name: 'example@example.com',
+            displayName: 'Example Name',
+          },
+          pubKeyCredParams: [
+            {
+              alg: -7,
+              type: 'public-key',
+            },
+          ],
+          authenticatorSelection: {
+            // authenticatorAttachment: 'cross-platform',
+            requireResidentKey: false,
+            userVerification: 'preferred',
+          },
+        };
+        console.log('create');
+        // 公開鍵生成リクエスト
+        navigator.credentials
+          .create({ publicKey })
+          .then(function(attestation) {
+            element.insertAdjacentHTML(
+              'beforeend',
+              `<p>公開鍵が生成されました : ${attestation.id}</p>`,
+            );
+            console.dir(attestation);
+            console.dir(JSON.parse(buf2str(attestation.response.clientDataJSON)));
+            rawId = attestation.rawId;
+          })
+          .catch(function(error) {
+            element.insertAdjacentHTML('beforeend', '<p>公開鍵の生成に失敗しました</p>');
+            console.log(error);
+          });
+      }
+
+      // 認証
+      function runAssertion() {
+        if (rawId === '') {
+          element.insertAdjacentHTML('beforeend', '<p>事前に公開鍵生成してください</p>');
+          return;
+        }
+
+        // チャレンジ値の生成
+        let challengeBuf = new Uint8Array(16);
+        window.crypto.getRandomValues(challengeBuf);
+
+        // 認証時のパラメータ
+        const publicKey = {
+          allowCredentials: [
+            {
+              id: rawId,
+              type: 'public-key',
+            },
+          ],
+          challenge: challengeBuf,
+          rpId: 'localhost',
+          userVerification: 'preferred',
+        };
+
+        // 認証リクエスト
+        navigator.credentials
+          .get({ publicKey })
+          .then(function(assertion) {
+            element.insertAdjacentHTML('beforeend', `<p>認証に成功しました : ${assertion.id}</p>`);
+            console.dir(assertion);
+            console.dir(JSON.parse(buf2str(assertion.response.clientDataJSON)));
+          })
+          .catch(function(error) {
+            element.insertAdjacentHTML('beforeend', '<p>認証に失敗しました</p>');
+            console.log(error);
+          });
+      }
+
+      // 結果の出力用要素
+      const element = document.querySelector('.element');
+
+      // 生成される公開鍵保存用変数
+      let rawId = '';
+
+      document.querySelector('#attestation').addEventListener('click', runAttestation);
+      document.querySelector('#assertion').addEventListener('click', runAssertion);
+    </script>
+  </body>
+</html>
