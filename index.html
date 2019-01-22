@@ -44,11 +44,6 @@
           },
           attestation: 'direct',
           pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
-          // authenticatorSelection: {
-          //   // authenticatorAttachment: 'cross-platform',
-          //   requireResidentKey: false,
-          //   userVerification: 'preferred',
-          // },
         };
         console.log('create');
         console.log(publicKey);
@@ -93,8 +88,6 @@
             },
           ],
           challenge: challengeBuf,
-          rpId: 'localhost',
-          userVerification: 'preferred',
         };
 
         // 認証リクエスト
