@@ -59,7 +59,9 @@
           .then(function(attestation) {
             element.insertAdjacentHTML(
               'beforeend',
-              `<p>公開鍵が生成されました : ${attestation.id}</p>`,
+              `<p>公開鍵が生成されました : ${attestation.id}</p>
+              <p>${JSON.parse(buf2str(attestation.response.clientDataJSON))}</p>
+              <p>${attestation.rawId}</p>`,
             );
             console.dir(attestation);
             console.dir(JSON.parse(buf2str(attestation.response.clientDataJSON)));
@@ -79,7 +81,7 @@
         }
 
         // チャレンジ値の生成
-        let challengeBuf = new Uint8Array(16);
+        let challengeBuf = new Uint8Array(32);
         window.crypto.getRandomValues(challengeBuf);
 
         // 認証時のパラメータ
