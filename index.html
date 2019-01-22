@@ -11,9 +11,7 @@
     <script>
       // 補助関数
       function str2buf(str) {
-        return new Uint8Array(str.length).map(function(x, i) {
-          return str.charCodeAt(i);
-        });
+        return Uint8Array.from(window.atob(str), c => c.charCodeAt(0));
       }
 
       function buf2str(buf) {
@@ -30,35 +28,31 @@
       // 生成
       function runAttestation() {
         // チャレンジ値の生成
-        let challengeBuf = new Uint8Array(16);
+        let challengeBuf = new Uint8Array(32);
         window.crypto.getRandomValues(challengeBuf);
 
         // 公開鍵生成リクエストのパラメータ
         const publicKey = {
           challenge: challengeBuf,
           rp: {
-            name: 'Example',
-            id: 'localhost',
+            name: 'FIDO Example Corporation',
           },
           user: {
-            id: str2buf('ExampleId'),
-            name: 'example@example.com',
-            displayName: 'Example Name',
+            id: str2buf('MIIBkzCCATigAwIBAjCCAZMwggE4oAMCAQIwggGTMII='),
+            name: 'alice@example.com',
+            displayName: 'Alice von Wunderland',
           },
-          pubKeyCredParams: [
-            {
-              alg: -7,
-              type: 'public-key',
-            },
-          ],
-          authenticatorSelection: {
-            // authenticatorAttachment: 'cross-platform',
-            requireResidentKey: false,
-            userVerification: 'preferred',
-          },
+          attestation: 'direct',
+          pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
+          // authenticatorSelection: {
+          //   // authenticatorAttachment: 'cross-platform',
+          //   requireResidentKey: false,
+          //   userVerification: 'preferred',
+          // },
         };
         console.log('create');
         console.log(publicKey);
+        console.log(JSON.stringify(publicKey));
         // 公開鍵生成リクエスト
         navigator.credentials
           .create({ publicKey })
