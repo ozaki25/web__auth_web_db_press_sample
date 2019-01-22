@@ -7,6 +7,7 @@
   </head>
   <body>
     <button id="attestation">生成</button> <button id="assertion">認証</button>
+    <p>v0.1</p>
     <div class="element"></div>
     <script>
       // 補助関数
@@ -38,7 +39,7 @@
             name: 'FIDO Example Corporation',
           },
           user: {
-            id: str2buf('MIIBkzCCATigAwIBAjCCAZMwggE4oAMCAQIwggGTMII='),
+            id: str2buf('test@example.com'),
             name: 'test@example.com',
             displayName: 'Alice von Wunderland',
           },
