@@ -7,7 +7,7 @@
   </head>
   <body>
     <button id="attestation">生成</button> <button id="assertion">認証</button>
-    <p>v0.1.1</p>
+    <p>v0.1.2</p>
     <div class="element"></div>
     <script>
       // 補助関数
@@ -39,12 +39,12 @@
             name: 'FIDO Example Corporation',
           },
           user: {
-            id: str2buf('AIIBkzCCATigAwIBAjCCAZMwggE4oAMCAQIwggGTMII='),
+            id: str2buf('MIIBkzCCATigAwIBAjCCAZMwggE4oAMCAQIwggGTMII='),
             name: 'test@example.com',
             displayName: 'Alice von Wunderland',
           },
           attestation: 'direct',
-          pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
+          pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
         };
         console.log('create');
         console.log(publicKey);
